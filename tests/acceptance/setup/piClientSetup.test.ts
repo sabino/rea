@@ -275,8 +275,14 @@ cliTest(
         other: { command: "other-server" },
         rea: {
           type: "stdio",
-          command: process.platform === "win32" ? process.execPath : cliPath,
-          args: process.platform === "win32" ? [cliPath, "mcp"] : ["mcp"],
+          command:
+            process.platform === "win32" || process.versions.bun !== undefined
+              ? process.execPath
+              : cliPath,
+          args:
+            process.platform === "win32" || process.versions.bun !== undefined
+              ? [cliPath, "mcp"]
+              : ["mcp"],
         },
       },
       autoEnableCodemode: false,

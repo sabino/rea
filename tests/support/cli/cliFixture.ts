@@ -1,4 +1,4 @@
-import { resolve } from "node:path";
+import { join, resolve } from "node:path";
 
 import {
   createTestWorkspace,
@@ -61,7 +61,10 @@ export const createTestCli = (
           ...(compileCache === undefined ||
           environment?.NODE_V8_COVERAGE !== undefined
             ? {}
-            : { NODE_COMPILE_CACHE: compileCache }),
+            : {
+                NODE_COMPILE_CACHE: compileCache,
+                BUN_RUNTIME_TRANSPILER_CACHE_PATH: join(compileCache, "bun"),
+              }),
           ...environment,
         },
         ...(input === undefined ? {} : { input }),

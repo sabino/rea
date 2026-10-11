@@ -55,11 +55,11 @@ cliTest(
         other: { command: "other-server" },
         rea: {
           command:
-            process.platform === "win32"
+            process.platform === "win32" || process.versions.bun !== undefined
               ? process.execPath
               : resolve("scripts/rea.mjs"),
           args:
-            process.platform === "win32"
+            process.platform === "win32" || process.versions.bun !== undefined
               ? [resolve("scripts/rea.mjs"), "mcp"]
               : ["mcp"],
         },

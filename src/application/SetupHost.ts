@@ -12,6 +12,7 @@ import {
 } from "./ClientRegistrationIdentity.js";
 import {
   SUPPORTED_NODE_VERSION_PROSE,
+  javaScriptRuntime,
   supportsNodeVersion,
 } from "../domain/runtimeVersion.js";
 import { runDoctor, systemDoctorHost, type DoctorHost } from "./Doctor.js";
@@ -56,7 +57,7 @@ export const setupRegistrationCommand = (
 ): readonly string[] =>
   packageRunner !== undefined
     ? packageRunnerRegistrationCommand(packageRunner, platform)
-    : platform === "win32"
+    : platform === "win32" || javaScriptRuntime(process.versions).id === "bun"
       ? [
           process.execPath,
           resolve(process.argv[1] ?? PRODUCT_IDENTITY.cliBinary),

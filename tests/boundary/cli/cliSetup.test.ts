@@ -225,7 +225,7 @@ describe("interactive setup completion", () => {
     {
       npmCommand: "exec",
       userAgent: "bun/1.4.2 npm/? node/v26.3.0 linux x64",
-      launcher: "bunx rea-agents",
+      launcher: "bunx --bun rea-agents",
     },
   ])(
     "prints an available next command for $launcher invocation",

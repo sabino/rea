@@ -473,7 +473,9 @@ describe("platform-aware client config paths", () => {
       ]),
     );
   });
+});
 
+describe("REA registration ownership", () => {
   it("recognizes prior exact REA releases while rejecting foreign package commands", () => {
     expect(
       isOwnedClientRegistrationCommand([
@@ -495,6 +497,22 @@ describe("platform-aware client config paths", () => {
     ).toBe(true);
     expect(
       isOwnedClientRegistrationCommand(["bunx", "another-package", "mcp"]),
+    ).toBe(false);
+    expect(
+      isOwnedClientRegistrationCommand([
+        "bunx",
+        "--bun",
+        `${PRODUCT_IDENTITY.packageName}@3.2.0`,
+        "mcp",
+      ]),
+    ).toBe(true);
+    expect(
+      isOwnedClientRegistrationCommand([
+        "bunx",
+        "--bun",
+        "another-package",
+        "mcp",
+      ]),
     ).toBe(false);
     expect(
       isOwnedClientRegistrationCommand(

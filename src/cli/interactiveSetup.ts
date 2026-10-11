@@ -227,6 +227,7 @@ const renderKeyboardHelp = (accessible: boolean): void => {
 
 const cliInvocation = (environment: Readonly<NodeJS.ProcessEnv>): string => {
   const runner = invokingPackageRunner(environment);
+  if (runner === "bunx") return "bunx --bun rea-agents";
   return runner === undefined ? "rea" : `${runner} rea-agents`;
 };
 

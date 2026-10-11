@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect } from "vitest";
 import { z } from "zod";
-import { packageRunnerRegistrationCommand } from "../../../src/application/ClientRegistrationIdentity.js";
+import { PRODUCT_IDENTITY } from "../../../src/identity.js";
 import { createTestTempDirectory } from "../../fixtures/temporaryDirectory.js";
 import { cliTest } from "../../support/cli/cliFixture.js";
 
@@ -49,8 +49,19 @@ for (const { runner, userAgent } of [
         ),
       );
       const { command, args } = configuration.mcpServers.rea;
+      const launcher =
+        runner === "bunx"
+          ? [
+              "bunx",
+              "--bun",
+              PRODUCT_IDENTITY.registrationPackageSpecifier,
+              "mcp",
+            ]
+          : ["npx", "-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"];
       expect([command, ...args]).toEqual(
-        packageRunnerRegistrationCommand(runner, process.platform),
+        process.platform === "win32"
+          ? ["cmd.exe", "/d", "/c", ...launcher]
+          : launcher,
       );
       const doctor = await run(["doctor", "--client", "omp", "--json"]);
       expect(doctor.json).toMatchObject({

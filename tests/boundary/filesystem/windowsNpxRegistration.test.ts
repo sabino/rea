@@ -23,6 +23,7 @@ const configurationSchema = z.object({
 
 it.each([
   {
+    runner: "npx",
     previousCommand: [
       "npx",
       "-y",
@@ -30,10 +31,24 @@ it.each([
       "mcp",
     ],
   },
-  { previousCommand: ["cmd", "/c", "npx", "-y", "rea-agents@5.0.0", "mcp"] },
-])(
-  "migrates Windows npx registration $previousCommand idempotently and uninstalls only REA",
-  async ({ previousCommand }) => {
+  {
+    runner: "npx",
+    previousCommand: ["cmd", "/c", "npx", "-y", "rea-agents@5.0.0", "mcp"],
+  },
+  {
+    runner: "bunx",
+    previousCommand: [
+      "cmd.exe",
+      "/d",
+      "/c",
+      "bunx",
+      PRODUCT_IDENTITY.registrationPackageSpecifier,
+      "mcp",
+    ],
+  },
+] as const)(
+  "migrates Windows $runner registration $previousCommand idempotently and uninstalls only REA",
+  async ({ runner, previousCommand }) => {
     const home = await createTestTempDirectory("rea-windows-registration-");
     const configPath = join(home, ".claude.json");
     const original = JSON.stringify({
@@ -56,7 +71,7 @@ it.each([
       expect.objectContaining({ client: "claude_code", state: "stale" }),
     );
     const client = { name: "claude_code", configPath, format: "json" } as const;
-    const command = setupRegistrationCommand("win32", "npx");
+    const command = setupRegistrationCommand("win32", runner);
     expect(
       await configureClientConfiguration(client, {}, command),
     ).toMatchObject({ status: "configured" });
@@ -128,8 +143,10 @@ it("retains rea-named custom shell registrations without writing a backup", asyn
     ["cmd.exe", "/c", "npx", "-y", "rea-agents@5.0.0", "mcp", "&", "other"],
     ["cmd.exe", "/c", "npx", "-y", "rea-agents@5.0.0 & other", "mcp"],
     ["cmd.exe", "/c", "bunx", "another-package", "mcp"],
+    ["cmd.exe", "/c", "bunx", "--bun", "another-package", "mcp"],
     ["cmd.exe", "/c", "bunx", "-y", "rea-agents@5.0.0", "mcp"],
     ["cmd.exe", "/c", "bunx", "rea-agents@5.0.0", "mcp", "&", "other"],
+    ["cmd.exe", "/c", "bunx", "--bun", "rea-agents@5.0.0", "mcp", "&", "other"],
   ]) {
     const original = JSON.stringify({
       mcpServers: { rea: { command: command[0], args: command.slice(1) } },
@@ -147,7 +164,7 @@ it("retains rea-named custom shell registrations without writing a backup", asyn
 
 it.skipIf(process.platform !== "win32").each([
   ["npx", ["-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]],
-  ["bunx", [PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]],
+  ["bunx", ["--bun", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]],
 ] as const)(
   "starts the written Windows registration through a native %s.cmd shim",
   async (runner, shimArguments) => {

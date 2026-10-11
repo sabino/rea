@@ -57,7 +57,7 @@ export const packageRunnerRegistrationCommand = (
   const command =
     runner === "npx"
       ? ["npx", "-y", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"]
-      : ["bunx", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"];
+      : ["bunx", "--bun", PRODUCT_IDENTITY.registrationPackageSpecifier, "mcp"];
   // Both runners may be .cmd shims on Windows, which clients cannot spawn directly.
   return platform === "win32" ? ["cmd.exe", "/d", "/c", ...command] : command;
 };
@@ -83,6 +83,13 @@ const packageRunnerReference = (
     command.length === 4 &&
     command[0] === "npx" &&
     command[1] === "-y" &&
+    command[3] === "mcp"
+  )
+    return command[2];
+  if (
+    command.length === 4 &&
+    command[0] === "bunx" &&
+    command[1] === "--bun" &&
     command[3] === "mcp"
   )
     return command[2];
