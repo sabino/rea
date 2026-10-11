@@ -177,9 +177,10 @@ using your user permissions; each runtime guide describes its effects.
 
 Native formats and host support vary by provider.
 REA's Ghidra provider supports Intel and Apple Silicon Macs, plus Linux x64/arm64.
+On macOS and Linux ARM64, install Ghidra with native components built for that host.
 Its Windows x64 integration is experimental.
 
-See [Hopper and Ghidra setup](docs/installation.md#hopper), the
+See [Hopper setup](docs/installation.md#hopper), [Ghidra setup](docs/installation.md#ghidra), the
 [IDA guide](docs/ida-provider.md), and
 [experimental Windows Ghidra support](docs/windows-ghidra-p0.md).
 Ghidra also supports [16-bit DOS analysis](docs/ghidra-dos.md).
