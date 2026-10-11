@@ -175,8 +175,11 @@ using your user permissions; each runtime guide describes its effects.
 
 <a id="choosing-a-deep-analysis-provider"></a>
 
-Native formats and host support vary by provider. See
-[Hopper and Ghidra setup](docs/installation.md#hopper), the
+Native formats and host support vary by provider.
+REA's Ghidra provider supports Intel and Apple Silicon Macs, plus Linux x64/arm64.
+Its Windows x64 integration is experimental.
+
+See [Hopper and Ghidra setup](docs/installation.md#hopper), the
 [IDA guide](docs/ida-provider.md), and
 [experimental Windows Ghidra support](docs/windows-ghidra-p0.md).
 Ghidra also supports [16-bit DOS analysis](docs/ghidra-dos.md).
