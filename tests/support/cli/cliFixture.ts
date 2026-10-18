@@ -40,6 +40,20 @@ const parseJson = (stdout: string): unknown | undefined => {
   }
 };
 
+/** Reuse CLI compilation without overriding caller-selected cache or coverage. */
+export const cliCompileCacheEnvironment = (
+  environment: NodeJS.ProcessEnv | undefined,
+  compileCache?: string,
+): NodeJS.ProcessEnv => ({
+  ...(compileCache === undefined || environment?.NODE_V8_COVERAGE !== undefined
+    ? {}
+    : {
+        NODE_COMPILE_CACHE: compileCache,
+        BUN_RUNTIME_TRANSPILER_CACHE_PATH: join(compileCache, "bun"),
+      }),
+  ...environment,
+});
+
 /** Create a compiled CLI driver backed by the supplied process registry. */
 export const createTestCli = (
   processes: TestProcesses,
@@ -68,14 +82,7 @@ export const createTestCli = (
                 TMP: tmpdir(),
               }
             : {}),
-          ...(compileCache === undefined ||
-          environment?.NODE_V8_COVERAGE !== undefined
-            ? {}
-            : {
-                NODE_COMPILE_CACHE: compileCache,
-                BUN_RUNTIME_TRANSPILER_CACHE_PATH: join(compileCache, "bun"),
-              }),
-          ...environment,
+          ...cliCompileCacheEnvironment(environment, compileCache),
         },
         ...(input === undefined ? {} : { input }),
         ...(timeoutMs === undefined ? {} : { timeoutMs }),
