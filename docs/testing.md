@@ -487,6 +487,25 @@ portable test shard. These limits leave headroom for cold setup and full coverag
 while preventing a hung job from holding the active main run for hours. They do
 not bound runner queue waiting. Timeouts still fail the required gate.
 
+The required gate includes each unsuccessful lane's result (`failure`,
+`cancelled`, `skipped`, or `missing`) without treating cancellation as a test
+failure or accepting it as success. To diagnose a cancellation, inspect the
+job's steps, runner assignment, check-run annotations, and logs. An absent log
+alone does not establish the cause. A hosted-runner acquisition error with no
+executed steps establishes a startup failure; a capacity notice identifies the
+runner-pool constraint. Increasing execution timeouts does not fix acquisition.
+Check workflow concurrency and dependency results before attributing other
+cancellations to infrastructure.
+
+For confirmed transient acquisition failures, use GitHub's **Re-run failed jobs**
+on the affected run once capacity is available, retaining the original attempt
+as evidence. Verify that the cancelled lanes actually execute and pass along
+with `CI required`; a scheduled run that only reuses qualification is not fresh
+platform validation. Keep all native architectures, `fail-fast: false`, and
+selected-lane requirements intact. A `failure` result still requires its own
+step/log investigation and must not be reclassified as infrastructure merely
+because another lane was cancelled.
+
 The separate `CI timings` workflow also diagnoses missing, startup-failed,
 queued/running, approval-required, canceled, and failed PR CI through bounded,
 read-only API scans. Incomplete pagination or changing identity stays unknown.
