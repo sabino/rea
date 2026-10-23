@@ -54,7 +54,11 @@ for (const [name, job] of Object.entries(jobs)) {
     failed.push(name);
 }
 if (failed.length)
-  throw new Error(`CI lanes did not pass: ${failed.join(", ")}`);
+  throw new Error(
+    `CI lanes did not pass: ${failed
+      .map((name) => `${name} (${jobs[name]?.result ?? "missing"})`)
+      .join(", ")}`,
+  );
 console.log("Every selected CI lane passed");
 if (reused)
   console.log(

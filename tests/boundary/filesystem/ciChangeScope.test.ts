@@ -967,8 +967,37 @@ it("rejects skipped selected work while allowing unselected lanes to skip", asyn
     });
   await expect(run("success")).resolves.toMatchObject({ stderr: "" });
   for (const result of ["failure", "cancelled", "skipped"]) {
-    await expect(run(result)).rejects.toMatchObject({ code: 1 });
+    await expect(run(result)).rejects.toMatchObject({
+      code: 1,
+      stderr: expect.stringContaining(`CI lanes did not pass: evm (${result})`),
+    });
   }
+  const missing = { ...jobs, evm: undefined };
+  await expect(
+    execFileAsync(process.execPath, [command], {
+      env: { ...process.env, CI_JOBS: JSON.stringify(missing) },
+    }),
+  ).rejects.toMatchObject({
+    code: 1,
+    stderr: expect.stringContaining("CI lanes did not pass: evm (missing)"),
+  });
+  await expect(
+    execFileAsync(process.execPath, [command], {
+      env: {
+        ...process.env,
+        CI_JOBS: JSON.stringify({
+          ...jobs,
+          evm: { result: "failure" },
+          browser: { result: "cancelled" },
+        }),
+      },
+    }),
+  ).rejects.toMatchObject({
+    code: 1,
+    stderr: expect.stringContaining(
+      "CI lanes did not pass: evm (failure), browser (cancelled)",
+    ),
+  });
 });
 
 it.each([
